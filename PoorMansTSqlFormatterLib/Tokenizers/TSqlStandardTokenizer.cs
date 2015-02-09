@@ -321,6 +321,18 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
                             }
                             break;
 
+                        case SqlTokenizationType.Parameter:
+                            if (currentCharacter != '@' && IsNonWordCharacter(currentCharacter))
+                            {
+                                CompleteToken(ref currentTokenizationType, tokenContainer, currentTokenValue);
+                                ProcessOrOpenToken(ref currentTokenizationType, currentTokenValue, currentCharacter, tokenContainer);
+                            }
+                            else
+                            {
+                                currentTokenValue.Append(currentCharacter);
+                            }
+                            break;
+
                         case SqlTokenizationType.SingleN:
                             if (currentCharacter == '\'')
                             {
@@ -520,6 +532,7 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
                     || currentTokenizationType.Value == SqlTokenizationType.NString
                     || currentTokenizationType.Value == SqlTokenizationType.QuotedString
                     || currentTokenizationType.Value == SqlTokenizationType.BracketQuotedName
+                    || currentTokenizationType.Value == SqlTokenizationType.Parameter
                     )
                     tokenContainer.HasUnfinishedToken = true;
 
@@ -695,6 +708,10 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
             {
                 currentTokenizationType = SqlTokenizationType.SingleZero;
             }
+            else if (currentCharacter == '@')
+            {
+                currentTokenizationType = SqlTokenizationType.Parameter;
+            }
             else if (currentCharacter >= '1' && currentCharacter <= '9')
             {
                 currentTokenizationType = SqlTokenizationType.Number;
@@ -869,6 +886,10 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
                     tokenContainer.Add(new Token(SqlTokenType.MonetaryValue, currentValue.ToString()));
                     break;
 
+                case SqlTokenizationType.Parameter:
+                    tokenContainer.Add(new Token(SqlTokenType.Parameter, currentValue.ToString()));
+                    break;
+
 
                 default:
                     throw new Exception("Unrecognized SQL Node Type");
@@ -910,7 +931,8 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
             SingleZero,
             SinglePipe,
             SingleEquals,
-            SingleOtherCompoundableOperator
+            SingleOtherCompoundableOperator,
+            Parameter
         }
 
     }
