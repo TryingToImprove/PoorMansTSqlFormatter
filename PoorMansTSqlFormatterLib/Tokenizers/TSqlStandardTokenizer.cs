@@ -532,7 +532,6 @@ namespace PoorMansTSqlFormatterLib.Tokenizers
                     || currentTokenizationType.Value == SqlTokenizationType.NString
                     || currentTokenizationType.Value == SqlTokenizationType.QuotedString
                     || currentTokenizationType.Value == SqlTokenizationType.BracketQuotedName
-                    || currentTokenizationType.Value == SqlTokenizationType.Parameter
                     )
                     tokenContainer.HasUnfinishedToken = true;
 
